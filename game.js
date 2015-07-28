@@ -6,8 +6,8 @@ window.onload = function(){
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
   game.preload(['sprites.png', 'items.png']);
-  game.items = [{price: 1000, description: "Hurter", id: 0}, 
-               {price: 5000, description: "Drg. Paw", id: 1},
+  game.items = [{price: 1000, description: "sword", id: 0}, 
+               {price: 5000, description: "gun", id: 1},
                {price: 5000, description: "Ice Magic", id: 2},
                {price: 60, description: "Chess Set", id: 3}]
   game.fps = 15;
@@ -245,9 +245,10 @@ window.onload = function(){
     battle.menu.x = 20;
     battle.menu.y = 170;
     battle.menu.color = '#fff';  
-    battle.activeAction = 0;(){
+    battle.activeAction = 0; 
 
-    battle.getPlayerStatus = function      return "HP: " + player.hp + "<br />MP: " + player.mp;
+    battle.getPlayerStatus = function () { 
+      return "HP: " + player.hp + "<br />MP: " + player.mp;
     };
     battle.playerStatus = new Label(battle.getPlayerStatus());
     battle.playerStatus.color = '#fff';
@@ -516,7 +517,6 @@ window.onload = function(){
     shopScene.backgroundColor = '#000';
     shopScene.addChild(shop);
   };
-    zswr99
   game.focusViewport = function(){
     var x = Math.min((game.width  - 16) / 2 - player.x, 0);
     var y = Math.min((game.height - 16) / 2 - player.y, 0);
