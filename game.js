@@ -1,5 +1,6 @@
 enchant();
-window.onload = function(){
+window.onload = function()
+{
   var game = new Game(300, 300);
   game.keybind(32, 'a');
   game.spriteSheetWidth = 256;
@@ -218,12 +219,7 @@ window.onload = function(){
       npc.say("hello");
     }
   };
-  var shopScene = new Scene();
-  var cat = {
-    action: function(){
-      game.pushScene(shopScene);
-    }
-  };
+
   var battleScene = new Scene();
   var brawler = {
     maxHp: 20,
@@ -237,7 +233,7 @@ window.onload = function(){
       game.pushScene(battleScene);
     }
   };
-  var spriteRoles = [,,greeter,,cat,,,,,,,,,,,brawler]
+  var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
   var setBattle = function(){
     battleScene.backgroundColor = '#000';
     var battle = new Group();
@@ -320,22 +316,6 @@ window.onload = function(){
           };
         }, 1000);
       }},
-      {name: "Magic", action: function(){
-        battle.menu.text = "You don't know any magic yet!";
-        battle.wait = true;
-        battle.activeAction = 0;
-        setTimeout(function(){
-          battle.menu.text = battle.listActions();
-          battle.wait = false;
-        }, 1000);
-      }},
-      {name: "Run", action: function(){
-        game.pause();
-        player.statusLabel.text = "You ran away!";
-        player.statusLabel.height = 12;
-        battle.menu.text = "";
-        game.popScene();
-      }}
     ];
     battle.listActions = function(){
       battle.optionText = [];
@@ -405,118 +385,7 @@ window.onload = function(){
     battle.addChild(battle.player);
     battleScene.addChild(battle);
   };
-  var setShopping = function(){
-    var shop = new Group();
-    shop.itemSelected = 0;
-    shop.shoppingFunds = function(){
-      return "Gold: " + player.gp;
-    };
-    shop.drawManeki = function(){
-      var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
-      var maneki = new Sprite(game.spriteWidth, game.spriteHeight);
-      maneki.image = image;
-      image.draw(game.assets['sprites.png']);
-      maneki.frame = 4;
-      maneki.y = 10;
-      maneki.x = 10;
-      maneki.scaleX = 2;
-      maneki.scaleY = 2;
-      this.addChild(maneki);
-      this.message.x = 40;
-      this.message.y = 10;
-      this.message.color = '#fff';
-      this.addChild(this.message);
-    };
-    
-    shop.drawItemsForSale = function(){
-      for(var i = 0; i < game.items.length; i++){
-        var image = new Surface(game.itemSpriteSheetWidth, game.spriteSheetHeight);
-        var item = new Sprite(game.spriteWidth, game.spriteHeight);
-        image.draw(game.assets['items.png']);
-        itemLocationX = 30 + 70*i;
-        itemLocationY = 70;
-        item.y = itemLocationY;
-        item.x = itemLocationX;
-        item.frame = i;
-        item.scaleX = 2;
-        item.scaleY = 2;
-        item.image = image;
-        this.addChild(item);
-        var itemDescription = new Label(game.items[i].price + "<br />" + game.items[i].description);
-        itemDescription.x = itemLocationX - 8;
-        itemDescription.y = itemLocationY + 40;
-        itemDescription.color = '#fff';
-        this.addChild(itemDescription);
-        if(i === this.itemSelected){
-          var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
-          this.itemSelector = new Sprite(game.spriteWidth, game.spriteHeight);
-          image.draw(game.assets['sprites.png']);
-          itemLocationX = 30 + 70*i;
-          itemLocationY = 160;
-          this.itemSelector.scaleX = 2;
-          this.itemSelector.scaleY = 2;
-          this.itemSelector.y = itemLocationY;
-          this.itemSelector.x = itemLocationX;
-          this.itemSelector.frame = 7;
-          this.itemSelector.image = image;
-          this.addChild(this.itemSelector);
-        };
-      };
-    };
-    shop.on('enter', function(){
-      shoppingFunds.text = shop.shoppingFunds();
-    });
-    shop.on('enterframe', function() {
-      setTimeout(function(){
-        if (game.input.a){
-          shop.attemptToBuy();
-        } else if (game.input.down) {
-          shop.message.text = shop.farewell;
-          setTimeout(function(){
-            game.popScene();
-            shop.message.text = shop.greeting;
-          }, 1000);
-        } else if (game.input.left) {
-          shop.itemSelected = shop.itemSelected + game.items.length - 1;
-          shop.itemSelected = shop.itemSelected % game.items.length;
-          shop.itemSelector.x = 30 + 70*shop.itemSelected;
-          shop.message.text = shop.greeting;
-        } else if (game.input.right) {
-          shop.itemSelected = (shop.itemSelected + 1) % game.items.length;
-          shop.itemSelector.x = 30 + 70*shop.itemSelected;
-          shop.message.text = shop.greeting;
-        }
-      }, 500);
-      player.showInventory(100);
-      shoppingFunds.text = shop.shoppingFunds();
-    });
-    shop.attemptToBuy = function(){
-      var itemPrice = game.items[this.itemSelected].price;
-      if (player.gp < itemPrice){
-        this.message.text = this.apology;
-      }else{
-        player.visibleItems = [];
-        player.gp = player.gp - itemPrice;
-        player.inventory.push(game.items[this.itemSelected].id);
-        this.message.text = this.sale;
-      }
-    };
-    
-    shop.greeting = "Hi!  I'm Maneki. Meow. I sell things.";
-    shop.apology = "Meow... sorry, you don't have the money for this.";
-    shop.sale = "Here ya go!";
-    shop.farewell = "Come again! Meow!";
-    shop.message = new Label(shop.greeting);
-    shop.drawManeki();
-    var shoppingFunds = new Label(shop.shoppingFunds());
-    shoppingFunds.color = '#fff';
-    shoppingFunds.y = 200;
-    shoppingFunds.x = 10;
-    shop.addChild(shoppingFunds);
-    shop.drawItemsForSale();
-    shopScene.backgroundColor = '#000';
-    shopScene.addChild(shop);
-  };
+
   game.focusViewport = function(){
     var x = Math.min((game.width  - 16) / 2 - player.x, 0);
     var y = Math.min((game.height - 16) / 2 - player.y, 0);
@@ -541,7 +410,6 @@ window.onload = function(){
     setMaps();
     setPlayer();
     setStage();
-    setShopping();
     setBattle();
     player.on('enterframe', function() {
       player.move();
