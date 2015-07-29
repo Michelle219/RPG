@@ -7,10 +7,6 @@ window.onload = function()
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
   game.preload(['sprites.png', 'items.png']);
-  game.items = [{price: 1000, description: "sword", id: 0}, 
-               {price: 5000, description: "gun", id: 1},
-               {price: 5000, description: "Ice Magic", id: 2},
-               {price: 60, description: "Chess Set", id: 3}]
   game.fps = 15;
   game.spriteWidth = 16;
   game.spriteHeight = 16;
@@ -321,7 +317,7 @@ window.onload = function()
       battle.optionText = [];
       for(var i = 0; i < battle.actions.length; i++){
         if(i === battle.activeAction){
-          battle.optionText[i] = "<span class='active-option'>"+ battle.actions[i].name + "</span>";
+          battle.optionText[i] =  battle.actions[i].name;
         } else {
           battle.optionText[i] = battle.actions[i].name;
         }
@@ -336,14 +332,14 @@ window.onload = function()
       battle.player.frame = 7;
       battle.player.x = 150;
       battle.player.y = 120;
-      battle.player.scaleX = 2;
-      battle.player.scaleY = 2;
+      battle.player.scaleX = 0;
+      battle.player.scaleY = 0;
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
       battle.enemy.x = 150;
-      battle.enemy.y = 70;
-      battle.enemy.scaleX = 2;
-      battle.enemy.scaleY = 2;
+      battle.enemy.y = 150;
+      battle.enemy.scaleX = 4;
+      battle.enemy.scaleY = 4;
       battle.addChild(battle.enemy);
     };
     battle.addCombatants();
