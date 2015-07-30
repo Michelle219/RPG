@@ -265,6 +265,21 @@ window.onload = function()
     }
   };
   var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
+
+  var hitOrMiss = function(number)
+  {
+    var value = Math.random();
+    if(value < .4)
+    {
+      number = 0;
+    }
+    else
+    {
+      number = number;
+    }
+    return number;
+  }
+
   var setBattle = function(){
     battleScene.backgroundColor = '#000';
     var battle = new Group();
@@ -311,18 +326,33 @@ window.onload = function()
     };
     battle.playerAttack = function(){
       var currentEnemy = player.currentEnemy;
-      var playerHit = battle.hitStrength(player.attack());
+      var playerHit = hitOrMiss(battle.hitStrength(player.attack()));
       currentEnemy.hp = currentEnemy.hp - playerHit;
-      battle.menu.text = "You did " + playerHit + " damage!";
-      if(currentEnemy.hp <= 0){
+      if(playerHit === 0)
+      {
+        battle.menu.text = "You foken missed m8!";
+      }
+      else
+      {
+        battle.menu.text = "You did " + playerHit + " damage!";
+      }
+      if(currentEnemy.hp <= 0)
+      {
          battle.won();
       };
     };
     battle.enemyAttack = function(){
       var currentEnemy = player.currentEnemy;
-      var enemyHit = battle.hitStrength(currentEnemy.attack);
+      var enemyHit = hitOrMiss(battle.hitStrength(currentEnemy.attack));
       player.hp = player.hp - enemyHit;
-      battle.menu.text = "You took " + enemyHit + " damage!";
+      if(enemyHit === 0)
+      {
+        battle.menu.text = "You foken missed m8!";
+      }
+      else
+      {
+        battle.menu.text = "You did " + enemyHit + " damage!";
+      }
       if(player.hp <= 0){
         battle.lost();
       };
