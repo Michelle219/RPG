@@ -1,9 +1,10 @@
 enchant();
 window.onload = function()
 {
-  var game = new Game(250, 250);
   document.body.style.backgroundColor = '#000000';
+  var game = new Game(600, 600);
   game.keybind(32, 'a');
+  game.keybind(13, 'b');
   game.spriteSheetWidth = 256;
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
@@ -49,6 +50,7 @@ window.onload = function()
     player.image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
     player.image.draw(game.assets['sprites.png']);
     player.currentEnemy = player;
+
 
     player.name = "Roger";
     player.characterClass = "Rogue";
@@ -208,16 +210,50 @@ window.onload = function()
   };
   var npc = {
     say: function(message){
-      player.statusLabel.height = 12;
+      player.statusLabel.height = 90;
       player.statusLabel.text = message;
     }
   }
   var greeter = {
     action: function(){
-      npc.say("hello");
+      npc.say("Hi. Do you remember me? we went to middle school together..<br>I'm the only survivor that's left " +
+               "after the wizard came and took everyone..<br>Luckily I was in the bathroom and he didn't see me...<br>" +
+               "You have to save everyone!! You are their only hope since I don't know<br>what to do and where to go..<br>" +
+               "But here, you can have this sword as a good-luck gift from me!");
     }
   };
-
+  var opening = new Scene ();
+  opening.backgroundColor = '#000';
+  var openingLabel = new enchant.Label("Welcome to Zenith!<br>You are the hero.<br>You are all that is left.<br>" + 
+      "Your village has been taken over while you" +
+      " were traveling abroad, exploring the" +
+      " world.<br>Now that you are back you must save the village!<br>Zenith is built in a wooded area " + 
+      "surrounded on  all sides by mountains, believed to be the home<br>" +
+      "to magnificent caverns.<br> You can explore the village and go into the cave.<br>" +
+      "As you progress you'd meet different<br>characters but remember your goal - to find and save the villagers!<br>Good Luck!<br><br>" +
+      "you can use the arrow-keys to move and the<br>spacebar to communicate with people/fight<br>" +
+      "(to start the game press the 'enter' key)");
+  openingLabel.width = game.width;
+  openingLabel.height = game.height;
+  openingLabel.font = "20px courier";
+  openingLabel.textAlign = "center";
+  openingLabel.y = 0;
+  openingLabel.x = 5;
+  openingLabel.color = '#fff';
+  openingLabel.backgroundColor = '#000';
+  opening.addChild(openingLabel);
+    var clearopening = function(){
+    openingLabel.text = "";
+    openingLabel.height = 0;
+  };
+  var ID=setInterval(function() {
+        if (game.input.b){
+          clearInterval(ID);
+          clearopening();
+          game.popScene();
+        }
+  }, 200);
+  
   var battleScene = new Scene();
   var brawler = {
     maxHp: 20,
@@ -454,6 +490,7 @@ window.onload = function()
   };
   game.onload = function(){
     game.storable = ['exp', 'level', 'gp', 'inventory'];
+    game.pushScene(opening);
     game.saveToLocalStorage = function(){
       for(var i = 0; i < game.storable.length; i++){
         if(game.storable[i] === 'inventory'){
