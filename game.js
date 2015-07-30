@@ -2,7 +2,7 @@ enchant();
 window.onload = function()
 {
   document.body.style.backgroundColor = '#000000';
-  var game = new Game(600, 600);
+  var game = new Core(300, 300);
   game.keybind(32, 'a');
   game.keybind(13, 'b');
   game.spriteSheetWidth = 256;
@@ -210,7 +210,7 @@ window.onload = function()
   };
   var npc = {
     say: function(message){
-      player.statusLabel.height = 90;
+      player.statusLabel.height = game.height/2;
       player.statusLabel.text = message;
     }
   }
@@ -230,15 +230,15 @@ window.onload = function()
       " world.<br>Now that you are back you must save the village!<br>Zenith is built in a wooded area " + 
       "surrounded on  all sides by mountains, believed to be the home<br>" +
       "to magnificent caverns.<br> You can explore the village and go into the cave.<br>" +
-      "As you progress you'd meet different<br>characters but remember your goal - to find and save the villagers!<br>Good Luck!<br><br>" +
-      "you can use the arrow-keys to move and the<br>spacebar to communicate with people/fight<br>" +
+      "As you progress you'd meet different<br>characters but remember your goal - to find and save the villagers!<br>Good Luck!<br>" +
+      "you can use the arrow-keys to move and the spacebar to communicate with people/fight<br>" +
       "(to start the game press the 'enter' key)");
   openingLabel.width = game.width;
   openingLabel.height = game.height;
-  openingLabel.font = "20px courier";
+  openingLabel.font = "10px courier";
   openingLabel.textAlign = "center";
   openingLabel.y = 0;
-  openingLabel.x = 5;
+  openingLabel.x = 5
   openingLabel.color = '#fff';
   openingLabel.backgroundColor = '#000';
   opening.addChild(openingLabel);
@@ -253,7 +253,8 @@ window.onload = function()
           game.popScene();
         }
   }, 200);
-  
+
+
   var battleScene = new Scene();
   var brawler = {
     maxHp: 20,
@@ -290,31 +291,31 @@ window.onload = function()
     battleScene.backgroundColor = "#90ee90";
 
     battle.menu = new Label();
-    battle.menu.x = 20;
-    battle.menu.y = 200;
+    battle.menu.x = 150;
+    battle.menu.y = 230;
     battle.menu.color = '#fff';  
     battle.activeAction = 0; 
 
     battle.getPlayerStatus = function () { 
-      return "Player: <br />" + "HP: " + player.hp + "<br />MP: " + player.mp;
+      return "You  <br />" + "HP: " + player.hp + "<br />MP: " + player.mp;
     };
 
 
     battle.playerStatus = new Label("");
     battle.playerStatus.color = '#0066FF';
-    battle.playerStatus.x = 25;
-    battle.playerStatus.y = 250/2;
+    battle.playerStatus.x = 65;
+    battle.playerStatus.y = 230;
 
 
     battle.getEnemyStatus = function () { 
-      return "Enemy: <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
+      return "The Illuminati <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
     };
 
 
     battle.enemyStatus = new Label("");
     battle.enemyStatus.color = '#C80000';
-    battle.enemyStatus.x = 175;
-    battle.enemyStatus.y = 250/2;
+    battle.enemyStatus.x = 115;
+    battle.enemyStatus.y = 55;
 
     
 
@@ -353,7 +354,7 @@ window.onload = function()
       currentEnemy.hp = currentEnemy.hp - playerHit;
       if(playerHit === 0)
       {
-        battle.menu.text = "You foken missed m8!";
+        battle.menu.text = "You missed !";
       }
       else
       {
@@ -370,7 +371,7 @@ window.onload = function()
       player.hp = player.hp - enemyHit;
       if(enemyHit === 0)
       {
-        battle.menu.text = "He foken missed m8!";
+        battle.menu.text = "He missed!";
       }
       else
       {
@@ -380,6 +381,7 @@ window.onload = function()
         battle.lost();
       };
     };
+
 
 
 
@@ -421,18 +423,18 @@ window.onload = function()
 
       battle.player = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.player.image = image;
-      battle.player.frame = 7;
-      battle.player.x = 150;
-      battle.player.y = 120;
-      battle.player.scaleX = 0;
-      battle.player.scaleY = 0;
+      battle.player.frame = 8;
+      battle.player.x = 250/2 - 90;
+      battle.player.y = 245;
+      battle.player.scaleX = 2;
+      battle.player.scaleY = 2;
 
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
-      battle.enemy.x = 250/2;
-      battle.enemy.y = 250/2;
-      battle.enemy.scaleX = 4;
-      battle.enemy.scaleY = 4;
+      battle.enemy.x = 250/2 + 90;
+      battle.enemy.y = 55;
+      battle.enemy.scaleX = 6;
+      battle.enemy.scaleY = 6;
 
       battle.addChild(battle.enemy);
     };
