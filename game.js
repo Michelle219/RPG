@@ -266,6 +266,7 @@ window.onload = function()
 
     action: function(){
       player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
       game.pushScene(battleScene);
     }
   };
@@ -326,11 +327,12 @@ window.onload = function()
       battle.over = true;
       player.exp += player.currentEnemy.exp;
       player.gp += player.currentEnemy.gp;
-      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      
       player.statusLabel.text = "You won!<br />" +
         "You gained "+ player.currentEnemy.exp + " exp<br />"+
         "and " + player.currentEnemy.gp + " gold pieces!";
       player.statusLabel.height = 45;
+      
       if(player.exp > player.levelStats[player.level].expMax){
         player.level += 1;
         player.statusLabel.text = player.statusLabel.text + 
@@ -362,6 +364,7 @@ window.onload = function()
       }
       if(currentEnemy.hp <= 0)
       {
+         currentEnemy.hp = 0;
          battle.won();
       };
     };
