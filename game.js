@@ -1,7 +1,8 @@
 enchant();
 window.onload = function()
 {
-  var game = new Game(300, 300);
+  var game = new Game(250, 250);
+  document.body.style.backgroundColor = '#000000';
   game.keybind(32, 'a');
   game.spriteSheetWidth = 256;
   game.spriteSheetHeight = 16;
@@ -47,6 +48,7 @@ window.onload = function()
     player.frame = player.spriteOffset + player.direction; 
     player.image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
     player.image.draw(game.assets['sprites.png']);
+    player.currentEnemy = player;
 
     player.name = "Roger";
     player.characterClass = "Rogue";
@@ -224,12 +226,14 @@ window.onload = function()
     attack: 3,
     exp: 3,
     gp: 5,
+
     action: function(){
       player.currentEnemy = this;
       game.pushScene(battleScene);
     }
   };
   var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
+
 
   var hitOrMiss = function(number)
   {
@@ -246,21 +250,38 @@ window.onload = function()
   }
 
   var setBattle = function(){
-    battleScene.backgroundColor = '#000';
     var battle = new Group();
+    battleScene.backgroundColor = "#90ee90";
+
     battle.menu = new Label();
     battle.menu.x = 20;
-    battle.menu.y = 170;
+    battle.menu.y = 200;
     battle.menu.color = '#fff';  
     battle.activeAction = 0; 
 
     battle.getPlayerStatus = function () { 
-      return "HP: " + player.hp + "<br />MP: " + player.mp;
+      return "Player: <br />" + "HP: " + player.hp + "<br />MP: " + player.mp;
     };
-    battle.playerStatus = new Label(battle.getPlayerStatus());
-    battle.playerStatus.color = '#fff';
-    battle.playerStatus.x = 200;
-    battle.playerStatus.y = 120;
+
+
+    battle.playerStatus = new Label("");
+    battle.playerStatus.color = '#0066FF';
+    battle.playerStatus.x = 25;
+    battle.playerStatus.y = 250/2;
+
+
+    battle.getEnemyStatus = function () { 
+      return "Enemy: <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
+    };
+
+
+    battle.enemyStatus = new Label("");
+    battle.enemyStatus.color = '#C80000';
+    battle.enemyStatus.x = 175;
+    battle.enemyStatus.y = 250/2;
+
+    
+
     battle.hitStrength = function(hit){
       return Math.round((Math.random() + .5) * hit);
     };
@@ -281,6 +302,7 @@ window.onload = function()
         player.statusLabel.height = 75;
       }
     };
+
     battle.lost = function(){
       battle.over = true;
       player.hp = player.levelStats[player.level].maxHp;
@@ -312,16 +334,19 @@ window.onload = function()
       player.hp = player.hp - enemyHit;
       if(enemyHit === 0)
       {
-        battle.menu.text = "You foken missed m8!";
+        battle.menu.text = "He foken missed m8!";
       }
       else
       {
-        battle.menu.text = "You did " + enemyHit + " damage!";
+        battle.menu.text = "He did " + enemyHit + " damage!";
       }
       if(player.hp <= 0){
         battle.lost();
       };
     };
+
+
+
     battle.actions = [{name: "Fight", action: function(){
         battle.wait = true;
         battle.playerAttack();
@@ -357,6 +382,7 @@ window.onload = function()
     battle.addCombatants = function(){
       var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
       image.draw(game.assets['sprites.png']);
+
       battle.player = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.player.image = image;
       battle.player.frame = 7;
@@ -364,12 +390,14 @@ window.onload = function()
       battle.player.y = 120;
       battle.player.scaleX = 0;
       battle.player.scaleY = 0;
+
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
       battle.enemy.x = 150;
       battle.enemy.y = 150;
       battle.enemy.scaleX = 4;
       battle.enemy.scaleY = 4;
+
       battle.addChild(battle.enemy);
     };
     battle.addCombatants();
@@ -396,6 +424,8 @@ window.onload = function()
           battle.menu.text = battle.listActions();
         }
         battle.playerStatus.text = battle.getPlayerStatus();
+        battle.enemyStatus.text = battle.getEnemyStatus();
+
       };
     })
     battleScene.on('exit', function() {
@@ -403,10 +433,12 @@ window.onload = function()
         battle.menu.text = "";
         battle.activeAction = 0;
         battle.playerStatus.text = battle.getPlayerStatus();
+        battle.enemyStatus.text = battle.getEnemyStatus();
         game.resume();
       }, 1000);
     });
     battle.addChild(battle.playerStatus);
+    battle.addChild(battle.enemyStatus);
     battle.addChild(battle.menu);
     battle.addChild(battle.player);
     battleScene.addChild(battle);
