@@ -1,37 +1,42 @@
 enchant();
-window.onload = function()
-{
+
+window.onload = function() {
   var game = new Game(300, 300);
   game.keybind(32, 'a');
   game.spriteSheetWidth = 256;
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
-  game.preload(['sprites.png', 'items.png']);
+  game.preload(['sprites.png', 'items.png', 'map0.png']);
   game.fps = 15;
   game.spriteWidth = 16;
   game.spriteHeight = 16;
-  var map = new Map(game.spriteWidth, game.spriteHeight);
-  var foregroundMap = new Map(game.spriteWidth, game.spriteHeight);
+  
+  //var currentMapL2 = backgroundMap0Layer2;
+  var currentMapCD = backgroundMap0CD;
+  var currentMap = new Map(16,16);
+ //currentMapL2 = new Map(16, 16);
   var setMaps = function(){
-    map.image = game.assets['sprites.png'];
-    map.loadData(mapData);
-    foregroundMap.image = game.assets['sprites.png'];
-    foregroundMap.loadData(foregroundData);
-    var collisionData = [];
-    for(var i = 0; i< foregroundData.length; i++){
-      collisionData.push([]);
-      for(var j = 0; j< foregroundData[0].length; j++){
-        var collision = foregroundData[i][j] %13 > 1 ? 1 : 0;
-        collisionData[i][j] = collision;
-      }
-    }
-    map.collisionData = collisionData;
+    
+    currentMap.image = game.assets['map0.png'];
+    //currentMapL2.image = game.assets['map0.png'];
+    currentMap.loadData(backgroundMap0);
+    //currentMapL2.loadData();
+    currentMap.collisionData = currentMapCD;
+  
   };
+
+
+
+
+
+
+
+
   var setStage = function(){
     var stage = new Group();
-    stage.addChild(map);
+    stage.addChild(currentMap);
+    //stage.addChild(currentMapL2);
     stage.addChild(player);
-    stage.addChild(foregroundMap);
     stage.addChild(player.statusLabel);
     game.rootScene.addChild(stage);
   };
@@ -52,6 +57,7 @@ window.onload = function()
     player.characterClass = "Rogue";
     player.exp = 0;
     player.level = 1;
+    console.log(player.level);
     player.gp = 100;
     if (window.localStorage.getItem('exp')) {
       player.exp = parseInt(window.localStorage.getItem('exp'));
@@ -77,11 +83,15 @@ window.onload = function()
                          {attack: 6, maxHp: 14, maxMp: 0, expMax: 30},
                          {attack: 7, maxHp: 20, maxMp: 5, expMax: 50}
     ];
+    
+
     player.attack = function(){
       return player.levelStats[player.level].attack;
     };
-    player.hp = player.levelStats[player.level].maxHp;
-    player.mp = player.levelStats[player.level].maxMp;
+    
+
+    player.hp = player.levelStats[1].maxHp;
+    player.mp = player.levelStats[1].maxMp;
       
     player.statusLabel = new Label("");
     player.statusLabel.width = game.width;
