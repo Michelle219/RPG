@@ -393,8 +393,8 @@ window.onload = function()
 
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
-      battle.enemy.x = 150;
-      battle.enemy.y = 150;
+      battle.enemy.x = 250/2;
+      battle.enemy.y = 250/2;
       battle.enemy.scaleX = 4;
       battle.enemy.scaleY = 4;
 
