@@ -1,15 +1,13 @@
 enchant();
-window.onload = function(){
-  var game = new Game(300, 300);
+window.onload = function()
+{
+  var game = new Game(600, 600);
   game.keybind(32, 'a');
+  game.keybind(13, 'b');
   game.spriteSheetWidth = 256;
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
   game.preload(['sprites.png', 'items.png']);
-  game.items = [{price: 1000, description: "sword", id: 0}, 
-               {price: 5000, description: "gun", id: 1},
-               {price: 5000, description: "Ice Magic", id: 2},
-               {price: 60, description: "Chess Set", id: 3}]
   game.fps = 15;
   game.spriteWidth = 16;
   game.spriteHeight = 16;
@@ -49,7 +47,7 @@ window.onload = function(){
     player.walk = 0;
     player.frame = player.spriteOffset + player.direction; 
     player.image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
-    player.image.draw(game.assets['sprites.png']);
+    player.image.draw(game.assets['sprites.png']); 
 
     player.name = "Roger";
     player.characterClass = "Rogue";
@@ -209,21 +207,50 @@ window.onload = function(){
   };
   var npc = {
     say: function(message){
-      player.statusLabel.height = 12;
+      player.statusLabel.height = 90;
       player.statusLabel.text = message;
     }
   }
   var greeter = {
     action: function(){
-      npc.say("hello");
+      npc.say("Hi. Do you remember me? we went to middle school together..<br>I'm the only survivor that's left " +
+               "after the wizard came and took everyone..<br>Luckily I was in the bathroom and he didn't see me...<br>" +
+               "You have to save everyone!! You are their only hope since I don't know<br>what to do and where to go..<br>" +
+               "But here, you can have this sword as a good-luck gift from me!");
     }
   };
-  var shopScene = new Scene();
-  var cat = {
-    action: function(){
-      game.pushScene(shopScene);
-    }
+  var opening = new Scene ();
+  opening.backgroundColor = '#000';
+  var openingLabel = new enchant.Label("Welcome to Zenith!<br>You are the hero.<br>You are all that is left.<br>" + 
+      "Your village has been taken over while you" +
+      " were traveling abroad, exploring the" +
+      " world.<br>Now that you are back you must save the village!<br>Zenith is built in a wooded area " + 
+      "surrounded on  all sides by mountains, believed to be the home<br>" +
+      "to magnificent caverns.<br> You can explore the village and go into the cave.<br>" +
+      "As you progress you'd meet different<br>characters but remember your goal - to find and save the villagers!<br>Good Luck!<br><br>" +
+      "you can use the arrow-keys to move and the<br>spacebar to communicate with people/fight<br>" +
+      "(to start the game press the 'enter' key)");
+  openingLabel.width = game.width;
+  openingLabel.height = game.height;
+  openingLabel.font = "20px courier";
+  openingLabel.textAlign = "center";
+  openingLabel.y = 0;
+  openingLabel.x = 5;
+  openingLabel.color = '#fff';
+  openingLabel.backgroundColor = '#000';
+  opening.addChild(openingLabel);
+    var clearopening = function(){
+    openingLabel.text = "";
+    openingLabel.height = 0;
   };
+  var ID=setInterval(function() {
+        if (game.input.b){
+          clearInterval(ID);
+          clearopening();
+          game.popScene();
+        }
+  }, 200);
+  
   var battleScene = new Scene();
   var brawler = {
     maxHp: 20,
@@ -237,7 +264,7 @@ window.onload = function(){
       game.pushScene(battleScene);
     }
   };
-  var spriteRoles = [,,greeter,,cat,,,,,,,,,,,brawler]
+  var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
   var setBattle = function(){
     battleScene.backgroundColor = '#000';
     var battle = new Group();
@@ -320,28 +347,12 @@ window.onload = function(){
           };
         }, 1000);
       }},
-      {name: "Magic", action: function(){
-        battle.menu.text = "You don't know any magic yet!";
-        battle.wait = true;
-        battle.activeAction = 0;
-        setTimeout(function(){
-          battle.menu.text = battle.listActions();
-          battle.wait = false;
-        }, 1000);
-      }},
-      {name: "Run", action: function(){
-        game.pause();
-        player.statusLabel.text = "You ran away!";
-        player.statusLabel.height = 12;
-        battle.menu.text = "";
-        game.popScene();
-      }}
     ];
     battle.listActions = function(){
       battle.optionText = [];
       for(var i = 0; i < battle.actions.length; i++){
         if(i === battle.activeAction){
-          battle.optionText[i] = "<span class='active-option'>"+ battle.actions[i].name + "</span>";
+          battle.optionText[i] =  battle.actions[i].name;
         } else {
           battle.optionText[i] = battle.actions[i].name;
         }
@@ -356,14 +367,14 @@ window.onload = function(){
       battle.player.frame = 7;
       battle.player.x = 150;
       battle.player.y = 120;
-      battle.player.scaleX = 2;
-      battle.player.scaleY = 2;
+      battle.player.scaleX = 0;
+      battle.player.scaleY = 0;
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
       battle.enemy.x = 150;
-      battle.enemy.y = 70;
-      battle.enemy.scaleX = 2;
-      battle.enemy.scaleY = 2;
+      battle.enemy.y = 150;
+      battle.enemy.scaleX = 4;
+      battle.enemy.scaleY = 4;
       battle.addChild(battle.enemy);
     };
     battle.addCombatants();
@@ -405,118 +416,7 @@ window.onload = function(){
     battle.addChild(battle.player);
     battleScene.addChild(battle);
   };
-  var setShopping = function(){
-    var shop = new Group();
-    shop.itemSelected = 0;
-    shop.shoppingFunds = function(){
-      return "Gold: " + player.gp;
-    };
-    shop.drawManeki = function(){
-      var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
-      var maneki = new Sprite(game.spriteWidth, game.spriteHeight);
-      maneki.image = image;
-      image.draw(game.assets['sprites.png']);
-      maneki.frame = 4;
-      maneki.y = 10;
-      maneki.x = 10;
-      maneki.scaleX = 2;
-      maneki.scaleY = 2;
-      this.addChild(maneki);
-      this.message.x = 40;
-      this.message.y = 10;
-      this.message.color = '#fff';
-      this.addChild(this.message);
-    };
-    
-    shop.drawItemsForSale = function(){
-      for(var i = 0; i < game.items.length; i++){
-        var image = new Surface(game.itemSpriteSheetWidth, game.spriteSheetHeight);
-        var item = new Sprite(game.spriteWidth, game.spriteHeight);
-        image.draw(game.assets['items.png']);
-        itemLocationX = 30 + 70*i;
-        itemLocationY = 70;
-        item.y = itemLocationY;
-        item.x = itemLocationX;
-        item.frame = i;
-        item.scaleX = 2;
-        item.scaleY = 2;
-        item.image = image;
-        this.addChild(item);
-        var itemDescription = new Label(game.items[i].price + "<br />" + game.items[i].description);
-        itemDescription.x = itemLocationX - 8;
-        itemDescription.y = itemLocationY + 40;
-        itemDescription.color = '#fff';
-        this.addChild(itemDescription);
-        if(i === this.itemSelected){
-          var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
-          this.itemSelector = new Sprite(game.spriteWidth, game.spriteHeight);
-          image.draw(game.assets['sprites.png']);
-          itemLocationX = 30 + 70*i;
-          itemLocationY = 160;
-          this.itemSelector.scaleX = 2;
-          this.itemSelector.scaleY = 2;
-          this.itemSelector.y = itemLocationY;
-          this.itemSelector.x = itemLocationX;
-          this.itemSelector.frame = 7;
-          this.itemSelector.image = image;
-          this.addChild(this.itemSelector);
-        };
-      };
-    };
-    shop.on('enter', function(){
-      shoppingFunds.text = shop.shoppingFunds();
-    });
-    shop.on('enterframe', function() {
-      setTimeout(function(){
-        if (game.input.a){
-          shop.attemptToBuy();
-        } else if (game.input.down) {
-          shop.message.text = shop.farewell;
-          setTimeout(function(){
-            game.popScene();
-            shop.message.text = shop.greeting;
-          }, 1000);
-        } else if (game.input.left) {
-          shop.itemSelected = shop.itemSelected + game.items.length - 1;
-          shop.itemSelected = shop.itemSelected % game.items.length;
-          shop.itemSelector.x = 30 + 70*shop.itemSelected;
-          shop.message.text = shop.greeting;
-        } else if (game.input.right) {
-          shop.itemSelected = (shop.itemSelected + 1) % game.items.length;
-          shop.itemSelector.x = 30 + 70*shop.itemSelected;
-          shop.message.text = shop.greeting;
-        }
-      }, 500);
-      player.showInventory(100);
-      shoppingFunds.text = shop.shoppingFunds();
-    });
-    shop.attemptToBuy = function(){
-      var itemPrice = game.items[this.itemSelected].price;
-      if (player.gp < itemPrice){
-        this.message.text = this.apology;
-      }else{
-        player.visibleItems = [];
-        player.gp = player.gp - itemPrice;
-        player.inventory.push(game.items[this.itemSelected].id);
-        this.message.text = this.sale;
-      }
-    };
-    
-    shop.greeting = "Hi!  I'm Maneki. Meow. I sell things.";
-    shop.apology = "Meow... sorry, you don't have the money for this.";
-    shop.sale = "Here ya go!";
-    shop.farewell = "Come again! Meow!";
-    shop.message = new Label(shop.greeting);
-    shop.drawManeki();
-    var shoppingFunds = new Label(shop.shoppingFunds());
-    shoppingFunds.color = '#fff';
-    shoppingFunds.y = 200;
-    shoppingFunds.x = 10;
-    shop.addChild(shoppingFunds);
-    shop.drawItemsForSale();
-    shopScene.backgroundColor = '#000';
-    shopScene.addChild(shop);
-  };
+
   game.focusViewport = function(){
     var x = Math.min((game.width  - 16) / 2 - player.x, 0);
     var y = Math.min((game.height - 16) / 2 - player.y, 0);
@@ -527,6 +427,7 @@ window.onload = function(){
   };
   game.onload = function(){
     game.storable = ['exp', 'level', 'gp', 'inventory'];
+    game.pushScene(opening);
     game.saveToLocalStorage = function(){
       for(var i = 0; i < game.storable.length; i++){
         if(game.storable[i] === 'inventory'){
@@ -541,7 +442,6 @@ window.onload = function(){
     setMaps();
     setPlayer();
     setStage();
-    setShopping();
     setBattle();
     player.on('enterframe', function() {
       player.move();
