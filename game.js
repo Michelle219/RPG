@@ -1,5 +1,5 @@
 enchant();
-
+var changeLevel;
 window.onload = function() {
   var game = new Game(300, 300);
   game.keybind(32, 'a');
@@ -10,32 +10,28 @@ window.onload = function() {
   game.fps = 15;
   game.spriteWidth = 16;
   game.spriteHeight = 16;
+  var map = new Map(16, 16);
+  var foregroundMap = new Map(16, 16);
+  var currentLevel = 0;
   
-  //var currentMapL2 = backgroundMap0Layer2;
-  var currentMapCD = backgroundMap0CD;
-  var currentMap = new Map(16,16);
- //currentMapL2 = new Map(16, 16);
-  var setMaps = function(){
-    
-    currentMap.image = game.assets['map0.png'];
-    //currentMapL2.image = game.assets['map0.png'];
-    currentMap.loadData(backgroundMap0);
-    //currentMapL2.loadData();
-    currentMap.collisionData = currentMapCD;
-  
-  };
+ 
+  changeLevel = function(levelData){
+      map.image = game.assets['map0.png'];
+      foregroundMap.image = game.assets['map0.png'];
 
 
-
-
-
+    map.loadData(levelData.bg);
+    foregroundMap.loadData(levelData.fg);
+    map.collisionData = levelData.cd;
+    setPlayer();
+  }
 
 
 
   var setStage = function(){
     var stage = new Group();
-    stage.addChild(currentMap);
-    //stage.addChild(currentMapL2);
+    stage.addChild(map);
+    stage.addChild(foregroundMap);
     stage.addChild(player);
     stage.addChild(player.statusLabel);
     game.rootScene.addChild(stage);
@@ -43,10 +39,10 @@ window.onload = function() {
   var player = new Sprite(game.spriteWidth, game.spriteHeight);
   var setPlayer = function(){
     player.spriteOffset = 5;
-    player.startingX = 6;
-    player.startingY = 14;
-    player.x = player.startingX * game.spriteWidth;
-    player.y = player.startingY * game.spriteHeight;
+    //player.startingX = 6;
+    //player.startingY = 14;
+    player.x = levels[currentLevel].x * game.spriteWidth;
+    player.y = levels[currentLevel].y * game.spriteHeight;
     player.direction = 0;
     player.walk = 0;
     player.frame = player.spriteOffset + player.direction; 
@@ -120,6 +116,16 @@ window.onload = function() {
 
   player.move = function(){
     this.frame = this.spriteOffset + this.direction * 2 + this.walk;
+    if(map.checkTile(player.x, player.y) == 162){
+      currentLevel++;
+      changeLevel(levels[currentLevel]);
+    }
+    //if(map.checkTile(player.x, player.y) == 13){
+//
+    //}
+
+
+
     if (this.isMoving) {
       this.moveBy(this.xMovement, this.yMovement);
       if (!(game.frame % 2)) {
@@ -156,7 +162,7 @@ window.onload = function() {
       if (0 <= x && x < map.width && 0 <= y && y < map.height && !map.hitTest(x, y)) {
           this.isMoving = true;
           this.move();
-        }
+      }
       }
     }
   };
@@ -443,8 +449,7 @@ window.onload = function() {
     };
     setInterval(game.saveToLocalStorage, 5000);
     
-    setMaps();
-    setPlayer();
+    changeLevel(levels[0]);
     setStage();
     setBattle();
     player.on('enterframe', function() {
