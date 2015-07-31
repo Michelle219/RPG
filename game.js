@@ -1,8 +1,12 @@
 enchant();
+
 var changeLevel;
 window.onload = function() {
   var game = new Game(300, 300);
+
+
   game.keybind(32, 'a');
+  game.keybind(13, 'b');
   game.spriteSheetWidth = 256;
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
@@ -48,6 +52,8 @@ window.onload = function() {
     player.frame = player.spriteOffset + player.direction; 
     player.image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
     player.image.draw(game.assets['sprites.png']);
+    player.currentEnemy = player;
+
 
     player.name = "Roger";
     player.characterClass = "Rogue";
@@ -222,15 +228,50 @@ window.onload = function() {
   };
   var npc = {
     say: function(message){
-      player.statusLabel.height = 12;
+      player.statusLabel.height = game.height/2;
       player.statusLabel.text = message;
     }
   }
   var greeter = {
     action: function(){
-      npc.say("hello");
+      npc.say("Hi. Do you remember me? we went to middle school together..<br>I'm the only survivor that's left " +
+               "after the wizard came and took everyone..<br>Luckily I was in the bathroom and he didn't see me...<br>" +
+               "You have to save everyone!! You are their only hope since I don't know<br>what to do and where to go..<br>" +
+               "But here, you can have this sword as a good-luck gift from me!");
     }
   };
+  var opening = new Scene ();
+  opening.backgroundColor = '#000';
+  var openingLabel = new enchant.Label("Welcome to Zenith!<br>You are the hero.<br>You are all that is left.<br>" + 
+      "Your village has been taken over while you" +
+      " were traveling abroad, exploring the" +
+      " world.<br>Now that you are back you must save the village!<br>Zenith is built in a wooded area " + 
+      "surrounded on  all sides by mountains, believed to be the home<br>" +
+      "to magnificent caverns.<br> You can explore the village and go into the cave.<br>" +
+      "As you progress you'd meet different<br>characters but remember your goal - to find and save the villagers!<br>Good Luck!<br>" +
+      "you can use the arrow-keys to move and the spacebar to communicate with people/fight<br>" +
+      "(to start the game press the 'enter' key)");
+  openingLabel.width = game.width;
+  openingLabel.height = game.height;
+  openingLabel.font = "10px courier";
+  openingLabel.textAlign = "center";
+  openingLabel.y = 0;
+  openingLabel.x = 5
+  openingLabel.color = '#fff';
+  openingLabel.backgroundColor = '#000';
+  opening.addChild(openingLabel);
+    var clearopening = function(){
+    openingLabel.text = "";
+    openingLabel.height = 0;
+  };
+  var ID=setInterval(function() {
+        if (game.input.b){
+          clearInterval(ID);
+          clearopening();
+          game.popScene();
+        }
+  }, 200);
+
 
   var battleScene = new Scene();
   var brawler = {
@@ -240,12 +281,15 @@ window.onload = function() {
     attack: 3,
     exp: 3,
     gp: 5,
+
     action: function(){
       player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
       game.pushScene(battleScene);
     }
   };
   var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
+
 
   var hitOrMiss = function(number)
   {
@@ -262,21 +306,38 @@ window.onload = function() {
   }
 
   var setBattle = function(){
-    battleScene.backgroundColor = '#000';
     var battle = new Group();
+    battleScene.backgroundColor = "#90ee90";
+
     battle.menu = new Label();
-    battle.menu.x = 20;
-    battle.menu.y = 170;
+    battle.menu.x = 150;
+    battle.menu.y = 230;
     battle.menu.color = '#fff';  
     battle.activeAction = 0; 
 
     battle.getPlayerStatus = function () { 
-      return "HP: " + player.hp + "<br />MP: " + player.mp;
+      return "You  <br />" + "HP: " + player.hp + "<br />MP: " + player.mp;
     };
-    battle.playerStatus = new Label(battle.getPlayerStatus());
-    battle.playerStatus.color = '#fff';
-    battle.playerStatus.x = 200;
-    battle.playerStatus.y = 120;
+
+
+    battle.playerStatus = new Label("");
+    battle.playerStatus.color = '#0066FF';
+    battle.playerStatus.x = 65;
+    battle.playerStatus.y = 230;
+
+
+    battle.getEnemyStatus = function () { 
+      return "The Illuminati <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
+    };
+
+
+    battle.enemyStatus = new Label("");
+    battle.enemyStatus.color = '#C80000';
+    battle.enemyStatus.x = 115;
+    battle.enemyStatus.y = 55;
+
+    
+
     battle.hitStrength = function(hit){
       return Math.round((Math.random() + .5) * hit);
     };
@@ -284,11 +345,12 @@ window.onload = function() {
       battle.over = true;
       player.exp += player.currentEnemy.exp;
       player.gp += player.currentEnemy.gp;
-      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      
       player.statusLabel.text = "You won!<br />" +
         "You gained "+ player.currentEnemy.exp + " exp<br />"+
         "and " + player.currentEnemy.gp + " gold pieces!";
       player.statusLabel.height = 45;
+      
       if(player.exp > player.levelStats[player.level].expMax){
         player.level += 1;
         player.statusLabel.text = player.statusLabel.text + 
@@ -297,6 +359,7 @@ window.onload = function() {
         player.statusLabel.height = 75;
       }
     };
+
     battle.lost = function(){
       battle.over = true;
       player.hp = player.levelStats[player.level].maxHp;
@@ -311,7 +374,7 @@ window.onload = function() {
       currentEnemy.hp = currentEnemy.hp - playerHit;
       if(playerHit === 0)
       {
-        battle.menu.text = "You foken missed m8!";
+        battle.menu.text = "You missed !";
       }
       else
       {
@@ -319,6 +382,7 @@ window.onload = function() {
       }
       if(currentEnemy.hp <= 0)
       {
+         currentEnemy.hp = 0;
          battle.won();
       };
     };
@@ -328,16 +392,20 @@ window.onload = function() {
       player.hp = player.hp - enemyHit;
       if(enemyHit === 0)
       {
-        battle.menu.text = "You foken missed m8!";
+        battle.menu.text = "He missed!";
       }
       else
       {
-        battle.menu.text = "You did " + enemyHit + " damage!";
+        battle.menu.text = "He did " + enemyHit + " damage!";
       }
       if(player.hp <= 0){
         battle.lost();
       };
     };
+
+
+
+
     battle.actions = [{name: "Fight", action: function(){
         battle.wait = true;
         battle.playerAttack();
@@ -373,19 +441,22 @@ window.onload = function() {
     battle.addCombatants = function(){
       var image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
       image.draw(game.assets['sprites.png']);
+
       battle.player = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.player.image = image;
-      battle.player.frame = 7;
-      battle.player.x = 150;
-      battle.player.y = 120;
-      battle.player.scaleX = 0;
-      battle.player.scaleY = 0;
+      battle.player.frame = 8;
+      battle.player.x = 250/2 - 90;
+      battle.player.y = 245;
+      battle.player.scaleX = 2;
+      battle.player.scaleY = 2;
+
       battle.enemy = new Sprite(game.spriteWidth, game.spriteHeight);
       battle.enemy.image = image;
-      battle.enemy.x = 150;
-      battle.enemy.y = 150;
-      battle.enemy.scaleX = 4;
-      battle.enemy.scaleY = 4;
+      battle.enemy.x = 250/2 + 90;
+      battle.enemy.y = 55;
+      battle.enemy.scaleX = 6;
+      battle.enemy.scaleY = 6;
+
       battle.addChild(battle.enemy);
     };
     battle.addCombatants();
@@ -412,6 +483,8 @@ window.onload = function() {
           battle.menu.text = battle.listActions();
         }
         battle.playerStatus.text = battle.getPlayerStatus();
+        battle.enemyStatus.text = battle.getEnemyStatus();
+
       };
     })
     battleScene.on('exit', function() {
@@ -419,10 +492,12 @@ window.onload = function() {
         battle.menu.text = "";
         battle.activeAction = 0;
         battle.playerStatus.text = battle.getPlayerStatus();
+        battle.enemyStatus.text = battle.getEnemyStatus();
         game.resume();
       }, 1000);
     });
     battle.addChild(battle.playerStatus);
+    battle.addChild(battle.enemyStatus);
     battle.addChild(battle.menu);
     battle.addChild(battle.player);
     battleScene.addChild(battle);
@@ -438,6 +513,7 @@ window.onload = function() {
   };
   game.onload = function(){
     game.storable = ['exp', 'level', 'gp', 'inventory'];
+    game.pushScene(opening);
     game.saveToLocalStorage = function(){
       for(var i = 0; i < game.storable.length; i++){
         if(game.storable[i] === 'inventory'){
