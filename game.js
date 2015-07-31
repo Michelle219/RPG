@@ -5,7 +5,7 @@ window.onload = function()
   var game = new Core(300, 300);
   game.keybind(32, 'a');
   game.keybind(13, 'b');
-  game.spriteSheetWidth = 256;
+  game.spriteSheetWidth = 336;
   game.spriteSheetHeight = 16;
   game.itemSpriteSheetWidth = 64;
   game.preload(['sprites.png', 'items.png']);
@@ -37,6 +37,7 @@ window.onload = function()
     stage.addChild(player.statusLabel);
     game.rootScene.addChild(stage);
   };
+
   var player = new Sprite(game.spriteWidth, game.spriteHeight);
   var setPlayer = function(){
     player.spriteOffset = 5;
@@ -49,8 +50,6 @@ window.onload = function()
     player.frame = player.spriteOffset + player.direction; 
     player.image = new Surface(game.spriteSheetWidth, game.spriteSheetHeight);
     player.image.draw(game.assets['sprites.png']);
-    player.currentEnemy = player;
-
 
     player.name = "Roger";
     player.characterClass = "Rogue";
@@ -82,10 +81,10 @@ window.onload = function()
                          {attack: 7, maxHp: 20, maxMp: 5, expMax: 50}
     ];
     player.attack = function(){
-      return player.levelStats[player.level].attack;
+      return player.levelStats[1].attack;
     };
-    player.hp = player.levelStats[player.level].maxHp;
-    player.mp = player.levelStats[player.level].maxMp;
+    player.hp = player.levelStats[1].maxHp;
+    player.mp = player.levelStats[1].maxMp;
       
     player.statusLabel = new Label("");
     player.statusLabel.width = game.width;
@@ -94,11 +93,12 @@ window.onload = function()
     player.statusLabel.color = '#fff';
     player.statusLabel.backgroundColor = '#000';
   };
+
   player.displayStatus = function(){
     player.statusLabel.text = 
       "--" + player.name + " the " + player.characterClass + 
-      "<br />--HP: "+player.hp + "/" + player.levelStats[player.level].maxHp + 
-      "<br />--MP: "+player.mp + "/" + player.levelStats[player.level].maxMp + 
+      "<br />--HP: "+player.hp + "/" + player.levelStats[1].maxHp + 
+      "<br />--MP: "+player.mp + "/" + player.levelStats[1].maxMp + 
       "<br />--Exp: "+player.exp + 
       "<br />--Level: " + player.level + 
       "<br />--GP: " + player.gp +
@@ -256,7 +256,7 @@ window.onload = function()
 
 
   var battleScene = new Scene();
-  var brawler = {
+  var illumintaiWizard = {
     maxHp: 20,
     hp: 20,
     sprite: 15,
@@ -270,7 +270,84 @@ window.onload = function()
       game.pushScene(battleScene);
     }
   };
-  var spriteRoles = [,,greeter,,,,,,,,,,,,,brawler]
+
+  var minion1 = {
+    maxHp: 20,
+    hp: 20,
+    sprite: 16,
+    attack: 3,
+    exp: 3,
+    gp: 5,
+
+    action: function(){
+      player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      game.pushScene(battleScene);
+    }
+  };
+
+  var minion2 = {
+    maxHp: 20,
+    hp: 20,
+    sprite: 17,
+    attack: 3,
+    exp: 3,
+    gp: 5,
+
+    action: function(){
+      player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      game.pushScene(battleScene);
+    }
+  };
+
+  var minion3 = {
+    maxHp: 20,
+    hp: 20,
+    sprite: 18,
+    attack: 3,
+    exp: 3,
+    gp: 5,
+
+    action: function(){
+      player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      game.pushScene(battleScene);
+    }
+  };
+
+  var minion4 = {
+    maxHp: 20,
+    hp: 20,
+    sprite: 19,
+    attack: 3,
+    exp: 3,
+    gp: 5,
+
+    action: function(){
+      player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      game.pushScene(battleScene);
+    }
+  };
+
+  var minion5 = {
+    maxHp: 20,
+    hp: 20,
+    sprite: 20,
+    attack: 3,
+    exp: 3,
+    gp: 5,
+
+    action: function(){
+      player.currentEnemy = this;
+      player.currentEnemy.hp = player.currentEnemy.maxHp;
+      game.pushScene(battleScene);
+    }
+  };
+
+
+  var spriteRoles = [,,greeter,,,,,,,,,,,,,illumintaiWizard, minion1, minion2, minion3, minion4, minion5]
 
 
   var hitOrMiss = function(number)
@@ -309,7 +386,7 @@ window.onload = function()
 
 
     battle.getEnemyStatus = function () { 
-      return "The Illuminati <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
+      return "Enemy <br />" +"HP: " + player.currentEnemy.hp + "<br />GP: " + player.currentEnemy.gp;
     };
 
 
@@ -380,7 +457,8 @@ window.onload = function()
       {
         battle.menu.text = "He did " + enemyHit + " damage!";
       }
-      if(player.hp <= 0){
+      if(player.hp <= 0)
+      {
         battle.lost();
       };
     };
